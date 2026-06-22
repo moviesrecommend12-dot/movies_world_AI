@@ -1,0 +1,229 @@
+@import "tailwindcss";
+
+/* ════════════════════════════════════════════════════════════════════════
+   ألوان وخطوط التطبيق — مطابقة بدقة لـ lib/theme/AppTheme.dart
+   ════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* خلفيات سينمائية داكنة وفخمة */
+  --bg-primary: #131313;
+  --bg-secondary: #1c1b1b;
+  --bg-card: #201f1f;
+  --bg-card-hover: #2a2a2a;
+
+  /* ألوان الهوية البصرية والتوهج الذكي */
+  --coral: #a4c9ff;
+  --gold: #ffba20;
+  --gold-light: #ddb7ff;
+  --gold-dark: #005fac;
+
+  /* تأثيرات النيون الإضافية */
+  --neon-pink: #6f00be;
+  --neon-orange: #bc8700;
+
+  /* ألوان النصوص */
+  --text-primary: #e5e2e1;
+  --text-second: #c0c7d6;
+  --text-muted: #8a919f;
+
+  /* الحدود والفواصل */
+  --border: #404753;
+  --border-hover: #1a92ff;
+
+  /* AI Glow Accent */
+  --ai-accent: #a4c9ff;
+  --ai-accent-bg: rgba(164, 201, 255, 0.12);
+
+  /* النجاح */
+  --success: #00e0a4;
+  --success-bg: rgba(0, 224, 164, 0.1);
+
+  --font-display: var(--font-sora);
+  --font-body: var(--font-inter);
+  --font-arabic: var(--font-cairo);
+}
+
+@theme inline {
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-card: var(--bg-card);
+  --color-bg-card-hover: var(--bg-card-hover);
+  --color-coral: var(--coral);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-dark: var(--gold-dark);
+  --color-neon-pink: var(--neon-pink);
+  --color-neon-orange: var(--neon-orange);
+  --color-text-primary: var(--text-primary);
+  --color-text-second: var(--text-second);
+  --color-text-muted: var(--text-muted);
+  --color-border: var(--border);
+  --color-border-hover: var(--border-hover);
+  --color-ai-accent: var(--ai-accent);
+  --color-success: var(--success);
+
+  --font-sora: var(--font-sora);
+  --font-inter: var(--font-inter);
+  --font-cairo: var(--font-cairo);
+}
+
+html,
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body), var(--font-arabic), sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* شريط تمرير سينمائي رفيع */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--coral);
+}
+
+/* ── التوهج النيوني الدوار على كروت الأفلام عند الـ Hover ──────────────────
+   معادل CSS لـ _GlowBorderPainter (SweepGradient) في MovieCard.dart       */
+@property --glow-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes spin-glow {
+  to {
+    --glow-angle: 360deg;
+  }
+}
+
+.movie-card-glow::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--glow-angle),
+    transparent 0deg,
+    transparent 30deg,
+    #1a92ff 90deg,
+    #6f00be 220deg,
+    transparent 280deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: spin-glow 3s linear infinite;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px rgba(111, 0, 190, 0.55));
+}
+
+.group:hover .movie-card-glow::before {
+  opacity: 1;
+}
+
+/* نبضة نيون لعقدة المعالجة النشطة — معادل _PulsingNeonDot */
+@keyframes pulse-neon {
+  0%,
+  100% {
+    box-shadow: 0 0 4px 0 rgba(164, 201, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 14px 4px rgba(164, 201, 255, 0.65);
+  }
+}
+.pulse-neon-dot {
+  animation: pulse-neon 1.2s ease-in-out infinite;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes shake-x {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+.animate-shake {
+  animation: shake-x 0.45s ease-in-out;
+}
+
+/* ── Dual-handle range slider (لفلتر سنة الإصدار) ──────────────────────────
+   تقنية تركيب شريطين input[type=range] فوق بعضهما، مع تعطيل pointer-events
+   على المسار وتفعيله فقط على المقبض (thumb) لكل شريط                       */
+.dual-range {
+  position: relative;
+  height: 28px;
+}
+.dual-range input[type="range"] {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  background: transparent;
+  pointer-events: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.dual-range input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  background: var(--border);
+  border-radius: 4px;
+}
+.dual-range input[type="range"]::-moz-range-track {
+  height: 4px;
+  background: var(--border);
+  border-radius: 4px;
+}
+.dual-range input[type="range"]::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--coral);
+  cursor: pointer;
+  margin-top: -6px;
+  box-shadow: 0 0 0 3px rgba(164, 201, 255, 0.18);
+}
+.dual-range input[type="range"]::-moz-range-thumb {
+  pointer-events: auto;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--coral);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 0 3px rgba(164, 201, 255, 0.18);
+}
