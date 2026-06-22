@@ -92,3 +92,4 @@ npm run dev
 - [ ] **حظر الدول المقيّدة جغرافياً** — معادل `IpService.dart` + `IpBlockDialog.dart`
 - [ ] **شاشة Splash متحركة** — معادل `SplashScreen.dart`
 - [ ] دمج بحث الأفكار المجنونة بزر "عشوائي" يختار فكرة واحدة عشوائياً بدل دفعة كاملة
+testing

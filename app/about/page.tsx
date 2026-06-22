@@ -1,13 +1,11 @@
-import Link from "next/link";
+"use client";
 
-// ════════════════════════════════════════════════════════════════════════════
-// app/about/page.tsx — صفحة "من نحن"
-// المعادل المباشر لـ AboutUsScreen.dart
-// ════════════════════════════════════════════════════════════════════════════
+import Link from "next/link";
+import { ResponsiveAdBanner } from "@/components/ads/AdBanner";
+
 export default function AboutPage() {
   return (
     <div className="flex min-h-screen flex-col">
-      {/* الترويسة الكبيرة */}
       <div className="relative flex h-[260px] items-center justify-center overflow-hidden">
         <div
           className="absolute -top-12 h-[300px] w-[300px] rounded-full"
@@ -60,6 +58,11 @@ export default function AboutPage() {
           </div>
         </div>
 
+        {/* ── إعلان بعد قسم الذكاء الاصطناعي ── */}
+        <div className="mt-9 flex justify-center">
+          <ResponsiveAdBanner label="إعلان ممول · Adsterra" />
+        </div>
+
         <div className="mt-9">
           <SectionTitle icon="✓" title="لماذا Movies World AI؟" />
           <div className="mt-4 flex flex-wrap gap-3">
@@ -67,6 +70,11 @@ export default function AboutPage() {
             <PillarChip label="تخصيص فائق" icon="🎯" color="#00e0a4" />
             <PillarChip label="اكتشاف ذكي" icon="🧭" color="#a4c9ff" />
           </div>
+        </div>
+
+        {/* ── إعلان ثاني قبل زر الدعوة للعمل ── */}
+        <div className="mt-9 flex justify-center">
+          <ResponsiveAdBanner label="إعلان ممول · Adsterra" />
         </div>
 
         <div className="mt-14 flex flex-col items-center text-center">
