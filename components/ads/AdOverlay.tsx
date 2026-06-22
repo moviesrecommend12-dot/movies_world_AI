@@ -2,12 +2,12 @@
 
 // ════════════════════════════════════════════════════════════════════════════
 // components/ads/AdOverlay.tsx — شاشة الإعلان الإجباري قبل تشغيل البحث
-// المعادل المباشر لـ AdController + RewardedVideoOverlay في AdConfig.dart
+// المعدل ليشمل Pop-under عند الإغلاق واستبدال الفيديو ببنر عادي
 // ════════════════════════════════════════════════════════════════════════════
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AdBanner } from "./AdBanner";
 
-const BANNER_VIEW_SECONDS = 8; // مطابق لـ AdConfig.bannerViewSeconds
+const BANNER_VIEW_SECONDS = 8; 
 
 /** Hook يتحكم في عرض الإعلان الإجباري قبل تنفيذ أي إجراء (مثل البحث). */
 export function useRewardedAd() {
@@ -17,12 +17,29 @@ export function useRewardedAd() {
   const onCompletedRef = useRef<(() => void) | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // ── منطق الـ Pop-under ──────────────────────────────────────────────────
+  const triggerPopUnder = useCallback(() => {
+    // كود الـ Pop-under الذي قدمه المستخدم
+    const scriptId = "pop-under-script";
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.src = "https://pl29850724.effectivecpmnetwork.com/20/38/53/20385339dad1d98a1ee1c1867bf207f2.js";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
   const close = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
+    
+    // تفعيل الـ Pop-under فقط عند الإغلاق (سواء يدوي أو تلقائي)
+    triggerPopUnder();
+    
     setIsShowing(false);
     onCompletedRef.current?.();
     onCompletedRef.current = null;
-  }, []);
+  }, [triggerPopUnder]);
 
   const trigger = useCallback((onCompleted: () => void) => {
     onCompletedRef.current = onCompleted;
@@ -49,8 +66,7 @@ export function useRewardedAd() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isShowing]);
+  }, [isShowing, close]);
 
   const skip = useCallback(() => {
     if (countdown === 0) close();
@@ -86,6 +102,7 @@ export function RewardedAdOverlay({ isShowing, countdown, onSkip }: RewardedAdOv
           </span>
         </div>
 
+        {/* استبدال الفيديو ببنر عادي 300x250 كما طلب المستخدم */}
         <div className="mt-3 overflow-hidden rounded-xl border border-border/40 shadow-2xl">
           <AdBanner size="medium300x250" />
         </div>

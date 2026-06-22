@@ -9,6 +9,7 @@ import MovieHero from "@/components/movies/MovieHero";
 import MovieGrid from "@/components/movies/MovieGrid";
 import MovieModal from "@/components/movies/MovieModal";
 import { RewardedAdOverlay, AdLoadingOverlay, useRewardedAd } from "@/components/ads/AdOverlay";
+import { ResponsiveAdBanner } from "@/components/ads/AdBanner";
 import { useMoviesStore } from "@/store/moviesStore";
 import { containsBannedContent } from "@/lib/contentFilter";
 import type { Movie } from "@/lib/types";
@@ -25,7 +26,6 @@ export default function Home() {
   const pipelineRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  // ── التمرير التلقائي إلى PipelineStatusWidget عند بدء المعالجة ───────────
   useEffect(() => {
     if (pipelineStep === "ai" || pipelineStep === "omdb") {
       setTimeout(() => {
@@ -34,7 +34,6 @@ export default function Home() {
     }
   }, [pipelineStep]);
 
-  // ── التمرير التلقائي إلى النتائج عند جهوزيتها ────────────────────────────
   useEffect(() => {
     if (pipelineStep === "done" && movies.length > 0) {
       setTimeout(() => {
@@ -48,7 +47,6 @@ export default function Home() {
     setTimeout(() => setWarning(null), 4000);
   };
 
-  // ── تشغيل البحث عبر إعلان البانر الإجباري — معادل _triggerSearchWithAd ──
   const handleSubmit = () => {
     if (loading) return;
     const text = description.trim();
@@ -75,7 +73,6 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* تنبيه المحتوى المخالف */}
       {warning && (
         <div className="animate-fade-in-up fixed top-4 left-1/2 z-50 -translate-x-1/2 rounded-xl border border-gold/40 bg-bg-card px-4 py-3 text-sm text-text-primary shadow-2xl">
           <span className="ml-2 text-gold">⚠</span>
@@ -119,7 +116,6 @@ export default function Home() {
         {errorMsg && <ErrorBanner message={errorMsg} />}
       </main>
 
-      {/* ── النتائج ──────────────────────────────────────────────────────── */}
       <div ref={resultsRef}>
         {movies.length > 0 && hero && (
           <section className="animate-fade-in-up">
@@ -132,6 +128,12 @@ export default function Home() {
                   movies.filter((m) => m.omdbEnriched).length
                 } enriched via OMDb`}
               />
+
+              {/* ── إعلان بين البطل وشبكة النتائج ── */}
+              <div className="mt-5 flex justify-center">
+                <ResponsiveAdBanner label="إعلان ممول · Adsterra" />
+              </div>
+
               <div className="mt-4">
                 <MovieGrid movies={rest} onSelect={setSelectedMovie} />
               </div>
@@ -152,11 +154,8 @@ export default function Home() {
         )}
       </div>
 
-      {/* طبقات الإعلان */}
       <RewardedAdOverlay isShowing={isShowing} countdown={countdown} onSkip={skip} />
       <AdLoadingOverlay isLoading={isLoading} />
-
-      {/* تفاصيل الفيلم */}
       <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />
     </div>
   );
