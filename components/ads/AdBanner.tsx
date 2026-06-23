@@ -68,8 +68,7 @@ export function AdBanner({ size, label }: AdBannerProps) {
       clearTimeout(timer);
       if (container.contains(script)) container.removeChild(script);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [containerId, key]);
+  }, [containerId, key, h, w, loaded]);
 
   return (
     <div className="flex flex-col items-center gap-1.5">
@@ -108,11 +107,17 @@ function FallbackCreative({
   pending: boolean;
 }) {
   const compact = h <= 90;
+  
+  // 💡 استبدل هذا الرابط برابط الـ Direct Link الإعلاني الخاص بك لتربح عند ضغط المستخدم
+  const MY_DIRECT_AD_LINK = "https://www.example-direct-link.com"; 
 
   return (
-    <div
+    <a
+      href={MY_DIRECT_AD_LINK}
+      target="_blank"
+      rel="noopener noreferrer"
       style={{ width: w, height: h }}
-      className="absolute inset-0 flex items-center justify-center gap-2.5 overflow-hidden border border-border/40 px-3"
+      className="absolute inset-0 flex items-center justify-center gap-2.5 overflow-hidden border border-border/40 px-3 cursor-pointer z-10 hover:opacity-95 transition-opacity"
     >
       <div
         className="absolute inset-0"
@@ -142,7 +147,7 @@ function FallbackCreative({
       <span className="absolute left-1.5 top-1.5 rounded bg-black/40 px-1.5 py-0.5 text-[8px] font-bold tracking-wide text-text-muted">
         AD
       </span>
-    </div>
+    </a>
   );
 }
 

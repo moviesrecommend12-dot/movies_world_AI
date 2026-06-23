@@ -1,9 +1,5 @@
 "use client";
 
-// ════════════════════════════════════════════════════════════════════════════
-// components/ads/AdOverlay.tsx — شاشة الإعلان الإجباري قبل تشغيل البحث
-// المعدل ليشمل Pop-under عند الإغلاق واستبدال الفيديو ببنر عادي
-// ════════════════════════════════════════════════════════════════════════════
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AdBanner } from "./AdBanner";
 
@@ -19,7 +15,6 @@ export function useRewardedAd() {
 
   // ── منطق الـ Pop-under ──────────────────────────────────────────────────
   const triggerPopUnder = useCallback(() => {
-    // كود الـ Pop-under الذي قدمه المستخدم
     const scriptId = "pop-under-script";
     if (!document.getElementById(scriptId)) {
       const script = document.createElement("script");
@@ -33,11 +28,18 @@ export function useRewardedAd() {
   const close = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     
-    // تفعيل الـ Pop-under فقط عند الإغلاق (سواء يدوي أو تلقائي)
+    // تفعيل الـ Pop-under عند الإغلاق
     triggerPopUnder();
     
     setIsShowing(false);
-    onCompletedRef.current?.();
+    
+    // تأجيل تشغيل البحث للتأكد من خروج الـ React Render من الحالة المشغولة وعمل الـ State Update بأمان
+    if (onCompletedRef.current) {
+      const savedCallback = onCompletedRef.current;
+      setTimeout(() => {
+        savedCallback();
+      }, 0);
+    }
     onCompletedRef.current = null;
   }, [triggerPopUnder]);
 
@@ -52,21 +54,25 @@ export function useRewardedAd() {
     }, 300);
   }, []);
 
+  // 1. مسؤول عن إنقاص العداد فقط لتجنب التداخل البرمجي
   useEffect(() => {
     if (!isShowing) return;
+    
     timerRef.current = setInterval(() => {
-      setCountdown((c) => {
-        if (c <= 1) {
-          close();
-          return 0;
-        }
-        return c - 1;
-      });
+      setCountdown((c) => (c > 0 ? c - 1 : 0));
     }, 1000);
+
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isShowing, close]);
+  }, [isShowing]);
+
+  // 2. يراقب العداد ويستدعي الإغلاق بشكل آمن ومنفصل تماماً (حلال المشاكل)
+  useEffect(() => {
+    if (isShowing && countdown <= 0) {
+      close();
+    }
+  }, [countdown, isShowing, close]);
 
   const skip = useCallback(() => {
     if (countdown === 0) close();
@@ -102,7 +108,7 @@ export function RewardedAdOverlay({ isShowing, countdown, onSkip }: RewardedAdOv
           </span>
         </div>
 
-        {/* استبدال الفيديو ببنر عادي 300x250 كما طلب المستخدم */}
+        {/* بنر إعلاني نقي يدعم نقرات التحويل التلقائية */}
         <div className="mt-3 overflow-hidden rounded-xl border border-border/40 shadow-2xl">
           <AdBanner size="medium300x250" />
         </div>
