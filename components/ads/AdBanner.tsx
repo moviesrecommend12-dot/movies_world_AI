@@ -109,7 +109,7 @@ function FallbackCreative({
   const compact = h <= 90;
   
   // 💡 استبدل هذا الرابط برابط الـ Direct Link الإعلاني الخاص بك لتربح عند ضغط المستخدم
-  const MY_DIRECT_AD_LINK = "https://www.example-direct-link.com"; 
+  const MY_DIRECT_AD_LINK = "https://www.effectivecpmnetwork.com/i5nknvgr?key=ae442b06aa30d77c8a9818cf25235f09";
 
   return (
     <a
