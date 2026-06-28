@@ -1,5 +1,12 @@
 "use client";
 
+// ════════════════════════════════════════════════════════════════════════════
+// 🛠️ تم إصلاحه بواسطة Claude (Anthropic) — 2026-06-28
+// تم استبدال <script dangerouslySetInnerHTML> الهش (الذي لا يضمن تنفيذ
+// السكربت بشكل موثوق ولا يتوافق مع آلية React) بمكوّن <ResponsiveAdBanner />
+// الذي يحقن إعلان Adsterra بالطريقة الكلاسيكية الصحيحة عبر useEffect.
+// ════════════════════════════════════════════════════════════════════════════
+
 import { useEffect, useRef, useState } from "react";
 import StorySearch from "@/components/search/StorySearch";
 import InspireCards from "@/components/search/InspireCards";
@@ -129,7 +136,7 @@ export default function Home() {
                 } enriched via OMDb`}
               />
 
-              {/* ── إعلان بين البطل وشبكة النتائج ── */}
+              {/* ── إعلان بين البطل وشبكة النتائج (تقليدي — مبني مع الصفحة) ── */}
               <div className="mt-5 flex justify-center">
                 <ResponsiveAdBanner label="إعلان ممول · Adsterra" />
               </div>

@@ -1,10 +1,13 @@
 "use client";
 
 // ════════════════════════════════════════════════════════════════════════════
-// components/search/MoodFilters.tsx — لوحة الفلاتر الكاملة للبحث المتقدم
-// المعادل المباشر لـ _buildSidebar + كل أقسام الأكورديون في
-// AdvancedSearchScreen.dart
+// 🛠️ تم إصلاحه بواسطة Claude (Anthropic) — 2026-06-28
+// تم حذف كود <script> الخام (atOptions = {...}) المكتوب يدوياً داخل JSX
+// لأنه غير صالح في React (يرمي "Objects are not valid as a React child")
+// واستُبدل باستخدام <ResponsiveAdBanner /> الجاهز (نفس الطريقة الكلاسيكية
+// المستخدمة في باقي الموقع عبر createElement + appendChild).
 // ════════════════════════════════════════════════════════════════════════════
+
 import { useState } from "react";
 import { useFilterStore } from "@/store/filterStore";
 import {
@@ -32,7 +35,7 @@ import {
   Dropdown,
 } from "./filterWidgets";
 import YearRangeSlider from "./YearRangeSlider";
-import { ResponsiveAdBanner } from "@/components/ads/AdBanner";
+import { ResponsiveAdBanner, SMART_LINK } from "@/components/ads/AdBanner";
 
 interface MoodFiltersProps {
   onSearch: () => void;
@@ -50,9 +53,17 @@ export default function MoodFilters({ onSearch, loading }: MoodFiltersProps) {
     f.directorQuery.length > 0 ||
     f.actorQuery.length > 0;
 
+  const handleAdvancedSearchClick = () => {
+    if (loading) return;
+    
+    // 💡 فتح الرابط الذكي عند النقر على زر البحث المتقدم
+    window.open(SMART_LINK, "_blank");
+    
+    onSearch();
+  };
+
   return (
     <div className="rounded-[20px] border border-border/30 bg-bg-card/60 p-5 shadow-2xl">
-      {/* رأس الفلاتر */}
       <div className="flex items-center gap-2.5">
         <span className="text-coral">🎚</span>
         <h2 className="font-sora text-lg font-bold text-text-primary">عوامل التصفية</h2>
@@ -73,7 +84,6 @@ export default function MoodFilters({ onSearch, loading }: MoodFiltersProps) {
 
       <div className="my-4 h-px bg-border/50" />
 
-      {/* قسم 0: نوع المحتوى */}
       <Accordion icon="🎬" title="نوع المحتوى" defaultOpen>
         <div className="flex gap-2">
           <SegButton label="🎬 أفلام" value="movie" current={f.contentType} onSelect={f.setContentType} />
@@ -81,7 +91,6 @@ export default function MoodFilters({ onSearch, loading }: MoodFiltersProps) {
         </div>
       </Accordion>
 
-      {/* قسم 1: المودات ① */}
       <Accordion
         icon="🎨"
         title="① المود والتصنيف (42 خيار)"
@@ -123,7 +132,6 @@ export default function MoodFilters({ onSearch, loading }: MoodFiltersProps) {
         })}
       </Accordion>
 
-      {/* قسم 2: النبضة العاطفية ② */}
       <Accordion
         icon="❤"
         title="② النبضة العاطفية"
@@ -141,7 +149,6 @@ export default function MoodFilters({ onSearch, loading }: MoodFiltersProps) {
         </div>
       </Accordion>
 
-      {/* قسم 3: نوع الحبكة ③ */}
       <Accordion
         icon="📖"
         title="③ نوع الحبكة"
@@ -159,7 +166,6 @@ export default function MoodFilters({ onSearch, loading }: MoodFiltersProps) {
         </div>
       </Accordion>
 
-      {/* قسم 4: سنة الإصدار */}
       <Accordion icon="📅" title="سنة الإصدار">
         <YearRangeSlider from={f.yearFrom} to={f.yearTo} onChange={f.setYearRange} />
         <div className="mt-3 flex flex-wrap gap-1.5">
@@ -176,7 +182,6 @@ export default function MoodFilters({ onSearch, loading }: MoodFiltersProps) {
         </div>
       </Accordion>
 
-      {/* قسم 5: التقييم والمدة */}
       <Accordion icon="⭐" title="التقييم والمدة">
         <FilterLabel>التقييم الأدنى (IMDb)</FilterLabel>
         <div className="flex flex-wrap gap-1.5">
@@ -206,7 +211,6 @@ export default function MoodFilters({ onSearch, loading }: MoodFiltersProps) {
         </div>
       </Accordion>
 
-      {/* قسم 6: اللغة والجنسية ④ */}
       <Accordion icon="🌐" title="④ اللغة والجنسية">
         <FilterLabel>اللغة الأصلية</FilterLabel>
         <Dropdown value={f.selectedLanguage} items={LANGUAGES} onChange={f.setSelectedLanguage} />
@@ -216,7 +220,6 @@ export default function MoodFilters({ onSearch, loading }: MoodFiltersProps) {
         </div>
       </Accordion>
 
-      {/* قسم 7: الجوائز ⑤ */}
       <Accordion icon="🏆" title="⑤ الجوائز">
         <div className="flex items-center justify-between">
           <span className="font-cairo text-[13px] text-text-second">أفلام فازت بجوائز فقط</span>
@@ -250,7 +253,6 @@ export default function MoodFilters({ onSearch, loading }: MoodFiltersProps) {
         )}
       </Accordion>
 
-      {/* قسم 8: المخرج والممثل ⑥ */}
       <Accordion icon="🔎" title="⑥ البحث بالمخرج / الممثل">
         <FilterLabel>اسم المخرج</FilterLabel>
         <input
@@ -270,7 +272,6 @@ export default function MoodFilters({ onSearch, loading }: MoodFiltersProps) {
         </div>
       </Accordion>
 
-      {/* قسم 9: التصنيف العمري ⑦ */}
       <Accordion icon="🧒" title="⑦ التصنيف العمري">
         <div className="flex flex-wrap gap-1.5">
           {AGE_RATINGS.map((a) => (
@@ -284,7 +285,6 @@ export default function MoodFilters({ onSearch, loading }: MoodFiltersProps) {
         </div>
       </Accordion>
 
-      {/* قسم 10: عدد النتائج */}
       <Accordion icon="🔢" title="عدد النتائج">
         <div className="flex items-center justify-between">
           <span className="font-cairo text-[13px] font-bold text-coral">{f.movieCount} نتيجة</span>
@@ -298,7 +298,7 @@ export default function MoodFilters({ onSearch, loading }: MoodFiltersProps) {
 
       <div className="mt-6">
         <button
-          onClick={onSearch}
+          onClick={handleAdvancedSearchClick}
           disabled={loading}
           className="flex w-full items-center justify-center gap-2 rounded-2xl py-4 font-cairo text-[15px] font-bold text-white shadow-[0_4px_20px_0_rgba(111,0,190,0.35)] disabled:opacity-60"
           style={{ background: "linear-gradient(135deg, #ffba20, #bc8700)" }}
@@ -320,5 +320,5 @@ export default function MoodFilters({ onSearch, loading }: MoodFiltersProps) {
         <ResponsiveAdBanner label="إعلان ممول · Adsterra" />
       </div>
     </div>
-  );
+   );
 }

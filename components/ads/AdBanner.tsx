@@ -3,6 +3,11 @@
 import { useEffect, useRef, useState, useId } from "react";
 import Image from "next/image";
 
+/**
+ * 💡 الرابط الذكي (Smart Link) الذي سيفتح عند النقر على البنرات الاحتياطية
+ */
+export const SMART_LINK = "https://www.effectivecpmnetwork.com/i5nknvgr?key=ae442b06aa30d77c8a9818cf25235f09";
+
 export const AD_KEYS = {
   medium300x250: "be29f9b41ee11cf608af76d850baec17",
   mobile320x50:  "deca6e0dd8a54625ce17a0aec5963e39",
@@ -17,58 +22,65 @@ const DIMENSIONS: Record<AdBannerSize, { w: number; h: number }> = {
   leaderboard728x90: { w: 728, h: 90  },
 };
 
-const LOAD_TIMEOUT_MS = 5000;
-
 interface AdBannerProps {
   size: AdBannerSize;
   label?: string;
 }
 
-export function AdBanner({ size, label }: AdBannerProps) {
+/**
+ * مكون البانر الإعلاني المعدل ليعمل بالطريقة التقليدية
+ */
+export function AdBanner({ size, label }: AdBannerProps ) {
   const { w, h } = DIMENSIONS[size];
   const key = AD_KEYS[size];
   const uid = useId().replace(/:/g, "");
-  const containerId = `ad-${uid}-${size}`;
-  const [failed, setFailed] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-  const injectedRef = useRef(false);
+  const containerId = `ad-container-${uid}-${size}`;
+  const [showFallback, setShowFallback] = useState(false);
+  const initializedRef = useRef(false);
 
   useEffect(() => {
-    if (injectedRef.current) return;
-    injectedRef.current = true;
-
-    setFailed(false);
-    setLoaded(false);
+    if (initializedRef.current) return;
+    initializedRef.current = true;
 
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    (window as any).atOptions = {
-      key,
-      format: "iframe",
-      height: h,
-      width: w,
-      params: {},
-    };
+    try {
+      // إعداد خيارات الإعلان
+      const atScript = document.createElement("script");
+      atScript.innerHTML = `
+        atOptions = {
+          'key' : '${key}',
+          'format' : 'iframe',
+          'height' : ${h},
+          'width' : ${w},
+          'params' : {}
+        };
+      `;
+      container.appendChild(atScript);
 
-    const script = document.createElement("script");
-    script.src = `https://www.highperformanceformat.com/${key}/invoke.js`;
-    script.async = true;
+      // استدعاء ملف الإعلان
+      const invokeScript = document.createElement("script");
+      invokeScript.src = `https://www.highperformanceformat.com/${key}/invoke.js`;
+      invokeScript.async = true;
+      
+      // في حال فشل السكربت في التحميل (مانع إعلانات )
+      invokeScript.onerror = () => setShowFallback(true);
+      
+      container.appendChild(invokeScript);
 
-    script.onload = () => setLoaded(true);
-    script.onerror = () => setFailed(true);
+      // مؤقت أمان لإظهار الاحتياطي إذا لم يظهر شيء
+      const timer = setTimeout(() => {
+        if (container.innerHTML.length < 100) {
+          setShowFallback(true);
+        }
+      }, 40000);
 
-    container.appendChild(script);
-
-    const timer = setTimeout(() => {
-      setFailed((prev) => (prev ? prev : !loaded));
-    }, LOAD_TIMEOUT_MS);
-
-    return () => {
-      clearTimeout(timer);
-      if (container.contains(script)) container.removeChild(script);
-    };
-  }, [containerId, key, h, w, loaded]);
+      return () => clearTimeout(timer);
+    } catch (e) {
+      setShowFallback(true);
+    }
+  }, [containerId, key, h, w]);
 
   return (
     <div className="flex flex-col items-center gap-1.5">
@@ -79,41 +91,30 @@ export function AdBanner({ size, label }: AdBannerProps) {
       )}
       <div
         style={{ width: w, height: h }}
-        className="relative overflow-hidden rounded-lg bg-black/5"
+        className="relative overflow-hidden rounded-lg bg-black/5 border border-border/10"
       >
         <div
           id={containerId}
           style={{ width: w, height: h }}
           className={`absolute inset-0 transition-opacity duration-300 ${
-            failed ? "opacity-0 pointer-events-none" : "opacity-100"
+            showFallback ? "opacity-0 pointer-events-none" : "opacity-100"
           }`}
         />
 
-        {!loaded && (
-          <FallbackCreative w={w} h={h} pending={!failed} />
+        {showFallback && (
+          <FallbackCreative w={w} h={h} />
         )}
       </div>
     </div>
   );
 }
 
-function FallbackCreative({
-  w,
-  h,
-  pending,
-}: {
-  w: number;
-  h: number;
-  pending: boolean;
-}) {
+function FallbackCreative({ w, h }: { w: number; h: number }) {
   const compact = h <= 90;
   
-  // 💡 استبدل هذا الرابط برابط الـ Direct Link الإعلاني الخاص بك لتربح عند ضغط المستخدم
-  const MY_DIRECT_AD_LINK = "https://www.effectivecpmnetwork.com/i5nknvgr?key=ae442b06aa30d77c8a9818cf25235f09";
-
   return (
     <a
-      href={MY_DIRECT_AD_LINK}
+      href={SMART_LINK}
       target="_blank"
       rel="noopener noreferrer"
       style={{ width: w, height: h }}
@@ -131,7 +132,7 @@ function FallbackCreative({
           alt=""
           width={compact ? 22 : 36}
           height={compact ? 22 : 36}
-          className={`rounded-md ${pending ? "animate-pulse" : ""}`}
+          className="rounded-md"
         />
         <div className={compact ? "text-right" : "text-center"}>
           <p className="font-sora text-[11px] font-bold text-text-primary">

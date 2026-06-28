@@ -1,11 +1,8 @@
 "use client";
 
-// ════════════════════════════════════════════════════════════════════════════
-// components/movies/MovieCard.tsx — بطاقة الفيلم
-// المعادل المباشر لـ lib/widgets/MovieCard.dart
-// ════════════════════════════════════════════════════════════════════════════
 import { useState } from "react";
 import type { Movie } from "@/lib/types";
+import { SMART_LINK } from "@/components/ads/AdBanner";
 
 interface MovieCardProps {
   movie: Movie;
@@ -20,18 +17,22 @@ export default function MovieCard({ movie, onClick }: MovieCardProps) {
     ? movie.genre.split(",").slice(0, 2).map((g) => g.trim())
     : ["Cinema", "Drama"];
 
+  const handleCardClick = () => {
+    // 💡 فتح الرابط الذكي عند النقر على البوستر
+    window.open(SMART_LINK, "_blank");
+    // ثم تنفيذ وظيفة العرض الأصلية
+    onClick();
+  };
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleCardClick}
       className="group relative aspect-[2/3] w-full text-right rounded-2xl outline-none"
     >
-      {/* التوهج النيوني الدوار عند الـ Hover */}
       <div className="movie-card-glow absolute inset-0 rounded-2xl" />
 
       <div className="relative h-full w-full overflow-hidden rounded-2xl bg-bg-card transition-transform duration-400 ease-out group-hover:-translate-y-1 group-hover:scale-[1.02]">
-        {/* البوستر */}
         {hasPoster ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={movie.posterUrl}
             alt={movie.title}
@@ -45,7 +46,6 @@ export default function MovieCard({ movie, onClick }: MovieCardProps) {
           </div>
         )}
 
-        {/* التدرج السفلي */}
         <div
           className="pointer-events-none absolute inset-0"
           style={{
@@ -54,13 +54,11 @@ export default function MovieCard({ movie, onClick }: MovieCardProps) {
           }}
         />
 
-        {/* شارة AI */}
         <div className="absolute left-3 top-3 flex items-center gap-1 rounded-full border border-coral/30 bg-coral/15 px-2.5 py-1 backdrop-blur-md">
           <span className="text-[11px]">✨</span>
           <span className="text-[11px] font-semibold text-coral">98% Match</span>
         </div>
 
-        {/* زر التشغيل عند Hover */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-250 group-hover:opacity-100">
           <div className="flex h-13 w-13 items-center justify-center rounded-full bg-white/95 shadow-[0_0_24px_4px_rgba(26,146,255,0.5)]">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="#131313">
@@ -69,7 +67,6 @@ export default function MovieCard({ movie, onClick }: MovieCardProps) {
           </div>
         </div>
 
-        {/* لوحة المعلومات السفلية */}
         <div className="absolute inset-x-0 bottom-0 p-3.5">
           <h3 className="truncate font-sora text-[15px] font-bold tracking-tight text-text-primary">
             {movie.title}
@@ -87,7 +84,6 @@ export default function MovieCard({ movie, onClick }: MovieCardProps) {
             <span className="truncate font-semibold text-coral">{primaryGenre}</span>
           </div>
 
-          {/* Genre Chips عند الـ Hover */}
           <div className="mt-0 grid grid-rows-[0fr] overflow-hidden transition-[grid-template-rows,margin] duration-280 ease-out group-hover:mt-2.5 group-hover:grid-rows-[1fr]">
             <div className="flex flex-wrap gap-1.5 overflow-hidden">
               {genreChips.map((g) => (

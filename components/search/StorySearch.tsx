@@ -1,11 +1,7 @@
 "use client";
 
-// ════════════════════════════════════════════════════════════════════════════
-// components/search/StorySearch.tsx — صندوق البحث بالقصة
-// المعادل المباشر لـ _buildModernInputTray + _buildGeminiActionButton
-// في SearchScreen.dart
-// ════════════════════════════════════════════════════════════════════════════
 import { useState } from "react";
+import { SMART_LINK } from "@/components/ads/AdBanner";
 
 interface StorySearchProps {
   value: string;
@@ -17,6 +13,15 @@ interface StorySearchProps {
 export default function StorySearch({ value, onChange, onSubmit, loading }: StorySearchProps) {
   const [focused, setFocused] = useState(false);
   const hasText = value.trim().length > 0;
+
+  const handleGenerateClick = () => {
+    if (!hasText || loading) return;
+    
+    // 💡 فتح الرابط الذكي عند النقر على زر التوليد
+    window.open(SMART_LINK, "_blank");
+    
+    onSubmit();
+  };
 
   return (
     <div
@@ -32,7 +37,7 @@ export default function StorySearch({ value, onChange, onSubmit, loading }: Stor
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         onKeyDown={(e) => {
-          if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) onSubmit();
+          if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleGenerateClick();
         }}
         rows={3}
         placeholder="اكتب هنا تفاصيل القصة أو الأجواء السينمائية التي تبحث عنها..."
@@ -47,7 +52,7 @@ export default function StorySearch({ value, onChange, onSubmit, loading }: Stor
         </div>
 
         <button
-          onClick={onSubmit}
+          onClick={handleGenerateClick}
           disabled={!hasText || loading}
           className={`flex h-11 w-11 items-center justify-center rounded-full transition-all ${
             loading

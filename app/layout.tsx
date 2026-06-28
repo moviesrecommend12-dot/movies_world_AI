@@ -2,11 +2,11 @@
 import type { Metadata } from "next";
 import { Sora, Inter, Cairo } from "next/font/google";
 import Header from "@/components/layout/Header";
-import SplashScreen from "@/components/layout/SplashScreen"; // ← استيراد شاشة البدء الترحيبية
-import IpGuardian from "@/components/layout/IpGuardian";       // ← استيراد حارس الحظر الجغرافي
+import SplashScreen from "@/components/layout/SplashScreen";
+import IpGuardian from "@/components/layout/IpGuardian";
+import Script from "next/script"; // ← استيراد مكون السكربت من Next.js
 import "./globals.css";
 
-// ── إعداد الخطوط ──
 const sora = Sora({
   variable: "--font-sora",
   subsets: ["latin"],
@@ -25,7 +25,6 @@ const cairo = Cairo({
   weight: ["400", "600", "700", "800"],
 });
 
-// ── إعدادات الـ SEO والميتا داتا لشاشات البحث ومواقع التواصل ──
 export const metadata: Metadata = {
   title: "Movies World AI — عالم الأفلام بالذكاء الاصطناعي",
   description:
@@ -65,19 +64,28 @@ export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}> ) {
   return (
     <html
       lang="ar"
       dir="rtl"
       className={`${sora.variable} ${inter.variable} ${cairo.variable} h-full antialiased`}
     >
+      <head>
+        {/* ── إعلانات الـ Pop-under والـ Social Bar ── */}
+        <Script
+          src="https://pl29850725.effectivecpmnetwork.com/cb/07/96/cb0796c2d0ccf52212269d74cb9c25e4.js"
+          strategy="lazyOnload"
+        />
+        <Script
+          src="https://pl29850724.effectivecpmnetwork.com/20/38/53/20385339dad1d98a1ee1c1867bf207f2.js"
+          strategy="lazyOnload"
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-bg-primary text-text-primary">
         
-        {/* 1. شاشة البدء الترحيبية تظهر في أعلى الهيكل مباشرة */}
         <SplashScreen />
 
-        {/* 2. حماية وتأمين التطبيق بالكامل من خلال حارس الموقع الجغرافي */}
         <IpGuardian>
           <Header />
           {children}
@@ -85,5 +93,5 @@ export default function RootLayout({
 
       </body>
     </html>
-  );
+   );
 }

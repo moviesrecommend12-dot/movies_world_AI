@@ -1,5 +1,12 @@
 "use client";
 
+// ════════════════════════════════════════════════════════════════════════════
+// 🛠️ تم إصلاحه بواسطة Claude (Anthropic) — 2026-06-28
+// تم استبدال كود <script> الخام غير الصالح (atOptions = {...} كـ JSX child)
+// بمكوّن <ResponsiveAdBanner /> الذي يحقن إعلان Adsterra بالطريقة الكلاسيكية
+// الصحيحة (createElement + appendChild) مع تكيّف تلقائي حسب عرض الحاوية.
+// ════════════════════════════════════════════════════════════════════════════
+
 import { useEffect, useRef, useState } from "react";
 import MoodFilters from "@/components/search/MoodFilters";
 import PipelineStatus from "@/components/pipeline/PipelineStatus";
@@ -8,6 +15,7 @@ import MovieHero from "@/components/movies/MovieHero";
 import MovieGrid from "@/components/movies/MovieGrid";
 import MovieModal from "@/components/movies/MovieModal";
 import { RewardedAdOverlay, AdLoadingOverlay, useRewardedAd } from "@/components/ads/AdOverlay";
+import { ResponsiveAdBanner } from "@/components/ads/AdBanner";
 import { useMoodStore } from "@/store/moodStore";
 import { useFilterStore } from "@/store/filterStore";
 import { containsBannedContent } from "@/lib/contentFilter";
@@ -124,6 +132,11 @@ export default function MoodSearchPage() {
                 </div>
               )}
               {rest.length > 0 && <MovieGrid movies={rest} onSelect={setSelectedMovie} />}
+
+              {/* ── إعلان بانر بعد النتائج (تقليدي — مبني مع الصفحة) ── */}
+              <div className="mt-5 flex justify-center">
+                <ResponsiveAdBanner label="إعلان ممول · Adsterra" />
+              </div>
             </div>
           </div>
         </div>
@@ -131,7 +144,7 @@ export default function MoodSearchPage() {
 
       <RewardedAdOverlay isShowing={isShowing} countdown={countdown} onSkip={skip} />
       <AdLoadingOverlay isLoading={isLoading} />
-      <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />
+      <MovieModal movie={selectedMovie} onClose={( ) => setSelectedMovie(null)} />
     </div>
   );
 }

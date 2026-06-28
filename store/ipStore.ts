@@ -1,4 +1,3 @@
-// store/ipStore.ts
 import { create } from 'zustand';
 
 const RESTRICTED_COUNTRIES = new Set([

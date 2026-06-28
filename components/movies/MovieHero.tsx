@@ -1,11 +1,8 @@
 "use client";
 
-// ════════════════════════════════════════════════════════════════════════════
-// components/movies/MovieHero.tsx — بطاقة العرض الكبيرة لأول نتيجة
-// المعادل المباشر لـ lib/widgets/HeroSection.dart
-// ════════════════════════════════════════════════════════════════════════════
 import { useState } from "react";
 import type { Movie } from "@/lib/types";
+import { SMART_LINK } from "@/components/ads/AdBanner";
 
 interface MovieHeroProps {
   movie: Movie;
@@ -17,13 +14,18 @@ export default function MovieHero({ movie, onClick }: MovieHeroProps) {
   const hasPoster = !!movie.posterUrl && !imgError;
   const genres = movie.genre ? movie.genre.split(",").slice(0, 2).join(", ") : "";
 
+  const handleHeroClick = () => {
+    // 💡 فتح الرابط الذكي عند النقر على البوستر الكبير
+    window.open(SMART_LINK, "_blank");
+    onClick();
+  };
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleHeroClick}
       className="relative block h-[300px] w-full overflow-hidden text-right sm:h-[340px]"
     >
       {hasPoster ? (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={movie.posterUrl}
           alt={movie.title}
@@ -36,7 +38,6 @@ export default function MovieHero({ movie, onClick }: MovieHeroProps) {
         </div>
       )}
 
-      {/* تدرج التعتيم */}
       <div
         className="absolute inset-0"
         style={{

@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AdBanner } from "./AdBanner";
+import { AdBanner, SMART_LINK } from "./AdBanner";
 
-const BANNER_VIEW_SECONDS = 8; 
+const BANNER_VIEW_SECONDS = 10; 
 
 /** Hook يتحكم في عرض الإعلان الإجباري قبل تنفيذ أي إجراء (مثل البحث). */
 export function useRewardedAd() {
@@ -13,27 +13,14 @@ export function useRewardedAd() {
   const onCompletedRef = useRef<(() => void) | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // ── منطق الـ Pop-under ──────────────────────────────────────────────────
-  const triggerPopUnder = useCallback(() => {
-    const scriptId = "pop-under-script";
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement("script");
-      script.id = scriptId;
-      script.src = "https://pl29850724.effectivecpmnetwork.com/20/38/53/20385339dad1d98a1ee1c1867bf207f2.js";
-      script.async = true;
-      document.body.appendChild(script);
-    }
-  }, []);
-
   const close = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     
-    // تفعيل الـ Pop-under عند الإغلاق
-    triggerPopUnder();
+    // 💡 فتح الرابط الذكي عند الإغلاق
+    window.open(SMART_LINK, "_blank");
     
     setIsShowing(false);
     
-    // تأجيل تشغيل البحث للتأكد من خروج الـ React Render من الحالة المشغولة وعمل الـ State Update بأمان
     if (onCompletedRef.current) {
       const savedCallback = onCompletedRef.current;
       setTimeout(() => {
@@ -41,7 +28,7 @@ export function useRewardedAd() {
       }, 0);
     }
     onCompletedRef.current = null;
-  }, [triggerPopUnder]);
+  }, []);
 
   const trigger = useCallback((onCompleted: () => void) => {
     onCompletedRef.current = onCompleted;
@@ -54,7 +41,6 @@ export function useRewardedAd() {
     }, 300);
   }, []);
 
-  // 1. مسؤول عن إنقاص العداد فقط لتجنب التداخل البرمجي
   useEffect(() => {
     if (!isShowing) return;
     
@@ -67,10 +53,10 @@ export function useRewardedAd() {
     };
   }, [isShowing]);
 
-  // 2. يراقب العداد ويستدعي الإغلاق بشكل آمن ومنفصل تماماً (حلال المشاكل)
   useEffect(() => {
     if (isShowing && countdown <= 0) {
-      close();
+      // لا نغلق تلقائياً لضمان نقر المستخدم على زر المتابعة (الذي سيفتح الإعلان)
+      // close(); 
     }
   }, [countdown, isShowing, close]);
 
@@ -108,7 +94,6 @@ export function RewardedAdOverlay({ isShowing, countdown, onSkip }: RewardedAdOv
           </span>
         </div>
 
-        {/* بنر إعلاني نقي يدعم نقرات التحويل التلقائية */}
         <div className="mt-3 overflow-hidden rounded-xl border border-border/40 shadow-2xl">
           <AdBanner size="medium300x250" />
         </div>

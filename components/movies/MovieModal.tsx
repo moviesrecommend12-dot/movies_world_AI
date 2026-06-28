@@ -4,9 +4,17 @@
 // components/movies/MovieModal.tsx — نافذة تفاصيل الفيلم
 // المعادل المباشر لـ lib/widgets/MovieDetailDialog.dart
 // ════════════════════════════════════════════════════════════════════════════
+// 🛠️ تم إصلاحه بواسطة Claude (Anthropic) — 2026-06-28
+// كان هنا كود <script> خام داخل JSX (atOptions = {...}) وهذا غير صالح إطلاقاً
+// في React/Next.js: الـ object يتم تفسيره كـ JSX child فيرمي خطأ
+// "Objects are not valid as a React child" ويعطّل الصفحة كاملة، وحتى لو لم
+// يرمِ خطأ فإن السكربتات لا تُنفَّذ عند إدراجها هكذا بدون useEffect.
+// تم استبدالها بمكوّن <AdBanner /> الذي يحقن السكربتات بالطريقة الكلاسيكية
+// الصحيحة (createElement + appendChild داخل useEffect).
+// ════════════════════════════════════════════════════════════════════════════
 import { useEffect, useState } from "react";
+import { AdBanner } from "@/components/ads/AdBanner";
 import type { Movie } from "@/lib/types";
-import { ResponsiveAdBanner, AdBanner } from "@/components/ads/AdBanner";
 
 interface MovieModalProps {
   movie: Movie | null;
@@ -206,21 +214,21 @@ export default function MovieModal({ movie, onClose }: MovieModalProps) {
             </p>
           </div>
 
-          {/* إعلان بانر أول */}
+          {/* إعلان بانر أول (تقليدي — مبني مباشرة مع الصفحة) */}
           <div className="flex justify-center px-4 sm:px-6 py-4 opacity-80">
-            <ResponsiveAdBanner label="إعلان ممول · Adsterra" />
+            <AdBanner size="medium300x250" />
           </div>
 
           <div className="h-px bg-border/50" />
 
-          {/* إعلان بانر ثاني */}
+          {/* إعلان بانر ثاني (تقليدي — مبني مباشرة مع الصفحة) */}
           <div className="flex justify-center px-4 sm:px-6 py-4 opacity-80">
-            <AdBanner size="medium300x250" label="إعلان · Adsterra" />
+            <AdBanner size="medium300x250" />
           </div>
         </div>
       </div>
     </div>
-  );
+   );
 }
 
 function MetaChip({ text, variant }: { text: string; variant: "gold" | "blue" }) {
